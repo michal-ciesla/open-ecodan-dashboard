@@ -1,0 +1,44 @@
+name: Zgłoszenie błędu
+about: Zgłoś problem lub błąd w działaniu projektu
+title: ""
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Dziękujemy za zgłoszenie. Uzupełnij poniższe informacje, aby łatwiej było zdiagnozować problem.
+  - type: textarea
+    id: description
+    attributes:
+      label: Opis problemu
+      description: Co się dzieje i czego się spodziewałeś?
+      placeholder: Opis problemu...
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Kroki do odtworzenia
+      description: Jak odtworzyć problem krok po kroku?
+      placeholder: 1. ...
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Środowisko
+      description: Wersja projektu, Home Assistant, model pompy i ważne ustawienia.
+      placeholder: |
+        - Wersja projektu:
+        - Home Assistant:
+        - Model pompy:
+        - Browser:
+        - Inne istotne informacje:
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logi / ekrany / dane
+      description: Wklej logi, zrzuty ekranu lub odpowiednie dane, jeśli są dostępne.
+      placeholder: Wklej dane tutaj...

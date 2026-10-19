@@ -1,0 +1,1 @@
+{"name":"open-ecodan-dashboard","version":"0.1.0","private":true,"type":"module","license":"MIT","scripts":{"build":"node scripts/build.mjs","test":"node --test","check":"node --check dist/open-ecodan-dashboard.js"},"engines":{"node":">=22"}}

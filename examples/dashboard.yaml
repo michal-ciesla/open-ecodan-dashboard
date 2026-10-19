@@ -1,0 +1,11 @@
+# Minimal dashboard: automatic discovery only when one MELCloud device exists.
+views:
+  - title: Ecodan
+    path: ecodan
+    panel: true
+    cards:
+      - type: custom:open-ecodan-dashboard
+        language: pl
+        title: Open Ecodan
+        controls: false
+        entities: {}

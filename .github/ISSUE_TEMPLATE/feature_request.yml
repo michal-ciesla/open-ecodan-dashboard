@@ -1,0 +1,31 @@
+name: Propozycja funkcjonalności
+about: Zasugeruj nową funkcję lub ulepszenie
+title: ""
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Dziękujemy za pomysł. Opisz, czego brakuje i dlaczego to ma sens dla projektu.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem lub potrzeba
+      description: Czego obecnie nie da się zrobić lub czego jest za mało?
+      placeholder: Opisz potrzebę...
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Proponowane rozwiązanie
+      description: Jak powinna wyglądać funkcjonalność?
+      placeholder: Opisz pomysł...
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Kontekst
+      description: W jakich scenariuszach to będzie używane?
+      placeholder: Wersja HA, model urządzenia, typ użytkownika...

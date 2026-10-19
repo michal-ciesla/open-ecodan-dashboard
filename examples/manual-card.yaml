@@ -1,0 +1,21 @@
+# ALL ENTITY IDS BELOW ARE EXAMPLES. Replace with your real HA entity IDs.
+type: custom:open-ecodan-dashboard
+language: pl
+controls: false
+tariff: 1.15
+currency: PLN
+# Set true only after checking matching circuit, scope and sensor semantics.
+energy_scope_confirmed: false
+entities:
+  climate: climate.example_zone_1
+  water_heater: water_heater.example_tank
+  flow: sensor.example_system_flow_temperature
+  return: sensor.example_system_return_temperature
+  outside: sensor.example_outside_temperature
+  room: sensor.example_room_temperature
+  tank: sensor.example_tank_temperature
+  frequency: sensor.example_heat_pump_frequency
+  consumed: sensor.example_daily_heating_energy_consumed
+  produced: sensor.example_daily_heating_energy_produced
+  defrost: ''
+  error: ''
