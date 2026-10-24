@@ -2,13 +2,13 @@
 
 Free, MIT-licensed Lovelace card for existing Mitsubishi Ecodan entities in Home Assistant. [Polski](README.md).
 
-**0.1.0 MVP: implemented software, not yet validated on a physical Home Assistant installation.** No affiliation with Mitsubishi Electric. No proprietary code, assets or private account data are included.
+**0.2.1: implemented software, running on one real Home Assistant installation; readings are not yet cross-checked against hardware counters.** No affiliation with Mitsubishi Electric. No proprietary code, assets or private account data are included.
 
 ## Features
 
-Seven tabs: Overview, Temperatures, Energy, Compressor, DHW, Diagnostics and Settings. Responsive native Web Component, graphical configuration, registry-based discovery scoped to a device, manual overrides and Polish/English navigation. Some diagnostic/editor labels are bilingual in this MVP.
+Seven tabs: Overview, Temperatures, Energy, Compressor, DHW, Diagnostics and Settings, with an installation diagram, event list and a working-rhythm timeline. Responsive native Web Component, graphical configuration, registry-based discovery scoped to a device, manual overrides and Polish/English navigation. Some diagnostic/editor labels are bilingual in this MVP.
 
-Local history charts show 6/24/72/168 hours with pointer inspection and accessible reading tables. Separate temperature plots share a time range; overlay comparisons and drag zoom are not implemented. Current values come only from HA states. Missing, unknown and unavailable states never become fake numeric measurements.
+Local history charts show 6/24/168 hours with pointer inspection and accessible reading tables. Recorder stores state changes only, so a sample is carried forward until the next change; the line breaks where the entity was unavailable or unknown. Separate temperature plots share a time range; overlay comparisons and drag zoom are not implemented. Current values come only from HA states. Missing, unknown and unavailable states never become fake numeric measurements.
 
 Energy uses manually paired counters for the SAME circuit and measurement scope. Hourly Recorder `sum` deltas are converted to kWh and checked for matching, continuous hourly boundaries. COP is total heat divided by total electricity, never the arithmetic mean of hourly COP. Missing hours, null sums or negative deltas invalidate the result. Zero consumption means no COP. The displayed interval accounts for statistics rows representing an hour ending one hour after their `start`. The last incomplete hour is excluded. This does not guarantee physical sampling synchrony in the manufacturer's cloud. This is period COP, not certified SCOP.
 
@@ -23,7 +23,7 @@ Energy sensors must have energy device class, `total` or `total_increasing` stat
 ## Manual installation
 
 1. Copy `dist/open-ecodan-dashboard.js` to `/config/www/open-ecodan-dashboard.js`.
-2. Add dashboard resource `/local/open-ecodan-dashboard.js?v=0.1.0`, type **JavaScript module**.
+2. Add dashboard resource `/local/open-ecodan-dashboard.js?v=0.2.1`, type **JavaScript module**.
 3. Reload the frontend, add Open Ecodan Dashboard from the picker or use:
 
 ```yaml

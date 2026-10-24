@@ -15,6 +15,12 @@ entities:
   room: sensor.example_room_temperature
   tank: sensor.example_tank_temperature
   frequency: sensor.example_heat_pump_frequency
+  # Optional: feed the diagram, event list and timeline.
+  mode: sensor.example_operation_mode
+  dhw_valve: binary_sensor.example_dhw_three_way_valve
+  heater: binary_sensor.example_electric_heater
+  demand: sensor.example_demand_percentage
+  cop: sensor.example_cop_today
   consumed: sensor.example_daily_heating_energy_consumed
   produced: sensor.example_daily_heating_energy_produced
   defrost: ''

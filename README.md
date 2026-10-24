@@ -15,10 +15,11 @@ It is meant for users who already have a working MELCloud integration in Home As
 ## Features
 
 - overview of live values from Home Assistant
+- installation diagram, event list and working-rhythm timeline
 - temperature, energy and compressor views
 - automatic entity detection for MELCloud devices
 - manual mapping for ambiguous setups
-- hourly COP and cost estimation from recorder statistics
+- hourly COP, daily energy bars and cost estimation from recorder statistics
 - control actions for supported climate and water heater entities
 - built for Home Assistant custom cards and HACS
 

@@ -4,8 +4,14 @@
 
 - Budowanie jednego pliku dystrybucyjnego bez zależności.
 - Kontrola składni Node.js.
-- 15 automatycznych testów jednostkowych/kontraktowych: poprawne i brakujące pomiary, walidacja konfiguracji, escaping, COP ważony energią, sumy po resecie, brak wspólnych godzin, null, zerowy pobór, ujemne korekty, wiele urządzeń, niejednoznaczne czujniki, pokrycie częstotliwości, walidacja usług, rejestracja karty, odmowa API i kontrakt historii/statystyk.
+- 21 automatycznych testów jednostkowych/kontraktowych: poprawne i brakujące pomiary, walidacja konfiguracji, escaping, COP ważony energią, sumy po resecie, brak wspólnych godzin, null, zerowy pobór, ujemne korekty, wiele urządzeń, niejednoznaczne czujniki, pokrycie częstotliwości, walidacja usług, rejestracja karty, odmowa API, kontrakt historii/statystyk, dobowe statystyki energii, przenoszenie ostatniego odczytu w próbkowaniu i brak kumulacji listenerów przy renderach.
 - Przegląd własnego kodu: brak połączeń z serwerem projektu, hasła MELCloud i danych prywatnych w repozytorium.
+
+## Zaobserwowane na instalacji użytkownika (0.2.1)
+
+- Karta ładuje się w HA 2026.10 jako zasób modułu i renderuje zakładki na żywych encjach MELCloud.
+- Wykres porównania temperatur czyta historię Recordera; po obserwacji przerwanych linii poprawiono regułę próbkowania.
+- Pozostałe punkty poniższej procedury nadal niewykonane.
 
 Adapter DOM w testach nie renderuje interfejsu jak przeglądarka. Poniższych punktów nie wykonano, ponieważ nie udostępniono instancji HA. Nie oznaczać tego wydania jako zweryfikowanego na sprzęcie.
 
@@ -13,7 +19,7 @@ Adapter DOM w testach nie renderuje interfejsu jak przeglądarka. Poniższych pu
 
 1. Zainstaluj ręcznie JS i dodaj kartę z `controls: false`. Sprawdź brak błędów konsoli i widoczność karty w pickerze.
 2. Porównaj każdą wykrytą encję z Narzędzia deweloperskie → Stany. Przy wielu urządzeniach wybierz właściwe; potwierdź brak mieszania modeli/stref. Sprawdź ręczne mapowanie i None.
-3. Otwórz wszystkie siedem zakładek, zakresy 6/24/72/168h, tabelę pomiarów i podgląd kursorem. Porównaj z Historią HA. Sprawdź 360px telefonu, tablet i desktop oraz jasny/ciemny motyw i języki PL/EN.
+3. Otwórz wszystkie siedem zakładek, zakresy 6/24/168h, tabelę pomiarów i podgląd kursorem. Porównaj z Historią HA. Sprawdź 360px telefonu, tablet i desktop oraz jasny/ciemny motyw i języki PL/EN.
 4. Sprawdź edytor GUI: zapis mapowania, odświeżenie strony, ponowne otwarcie edytora i zgodność YAML. Testuj także encję, która chwilowo nie istnieje lub jest unavailable.
 5. Wybierz parę CO pobrane/oddane, potwierdź zgodność, poczekaj na pełne statystyki. Porównaj przyrosty Recorder w dokładnie tym samym wyświetlonym okresie. Powtórz przez północ i przy zmianie czasu lokalnego; zakres obliczeń jest UTC.
 6. Sprawdź przypadek brakującej godziny, braku Recorder, błędu uprawnień i braku statystyk. Karta ma pokazywać brak wyniku, a nie 0 kWh/COP. Nie psuj produkcyjnych liczników — użyj osobnej instalacji testowej lub fixture.

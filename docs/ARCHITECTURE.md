@@ -8,7 +8,7 @@ Karta Dashboard/Plugin HACS jako jeden samowystarczalny plik JavaScript, bez now
 |---|---|
 | MELCloud w HA | Chmura Mitsubishi, dane urządzenia, stan encji i usługi |
 | Recorder i History w HA | Lokalna retencja i statystyki; karta nie tworzy własnej bazy |
-| `src/core.js` | Walidacja, wykrywanie, czysta matematyka energii i szacunki sprężarki |
+| `src/core.js` | Walidacja, wykrywanie, próbkowanie historii, czysta matematyka energii i szacunki sprężarki |
 | `src/card.js` | Web Component, własny Shadow DOM, siedem zakładek, edytor, API HA |
 | `scripts/build.mjs` | Deterministyczne połączenie źródeł w jeden plik bez zależności |
 | `dist/open-ecodan-dashboard.js` | Moduł ładowany przez Lovelace/HACS |
@@ -19,7 +19,11 @@ HA przekazuje `hass` do karty. Karta pobiera `config/entity_registry/list` i `co
 
 Rejestry nie są pobierane przy każdym odświeżeniu stanu. Przy odmowie dostępu pozostaje ręczne mapowanie. Nie próbujemy omijać uprawnień HA.
 
-Bieżący stan pochodzi z `hass.states`. Historia: `hass.callApi('GET', 'history/period/...')`, tylko zmapowane encje i maksymalnie 168h. Statystyki: `hass.callWS` dla dwóch liczników, okres `hour`, typ `sum`, jednostka kWh. Historia/statystyki odświeżają się na żądanie i co pięć minut przy otwartej karcie. Zamknięcie odłącza timer, a identyfikator żądania zapobiega zastosowaniu nieaktualnej odpowiedzi. Nie ma procesów działających poza otwartym frontendem.
+Bieżący stan pochodzi z `hass.states`. Historia: `hass.callApi('GET', 'history/period/...')`, tylko zmapowane encje i maksymalnie 168h. Statystyki: `hass.callWS` dla dwóch liczników, okres `hour`, typ `sum`, jednostka kWh. Dla słupków dobowych dochodzi drugie zapytanie: okres `day`, typ `change`, czternaście dni. Historia/statystyki odświeżają się na żądanie i co pięć minut przy otwartej karcie. Zamknięcie odłącza timer, a identyfikator żądania zapobiega zastosowaniu nieaktualnej odpowiedzi. Nie ma procesów działających poza otwartym frontendem.
+
+## Próbkowanie historii
+
+Zakres dzieli się na stałą liczbę slotów (72/96/168 dla 6h/24h/7d). Slot dostaje ostatni znany stan encji. Recorder zapisuje wyłącznie zmiany, więc brak nowych wierszy oznacza stałą wartość, a nie brak danych; wartość jest niesiona do przodu. Przerwa w serii powstaje tylko tam, gdzie zapisano `unavailable`/`unknown` albo gdy przed slotem nie ma żadnego odczytu. Oddzielną, ostrzejszą regułę zachowuje szacowanie pracy sprężarki: przerwa powyżej 15 minut nie liczy się do pokrycia.
 
 ## Sterowanie
 
