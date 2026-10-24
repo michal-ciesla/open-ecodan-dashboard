@@ -5,7 +5,10 @@ export const ROLES = {
   outside: ['Na zewnątrz / Outside', 'sensor'], room: ['Wewnątrz / Room', 'sensor'],
   tank: ['Zasobnik / Tank', 'sensor'], frequency: ['Sprężarka / Compressor', 'sensor'],
   defrost: ['Odszranianie / Defrost', 'binary_sensor'], error: ['Błąd / Error', 'sensor,binary_sensor'],
-  consumed: ['Energia pobrana / Consumed', 'sensor'], produced: ['Energia oddana / Produced', 'sensor']
+  consumed: ['Energia pobrana / Consumed', 'sensor'], produced: ['Energia oddana / Produced', 'sensor'],
+  mode: ['Tryb pracy / Mode', 'sensor'], dhw_valve: ['Zawór CWU / DHW valve', 'binary_sensor'],
+  heater: ['Grzałki / Electric heater', 'binary_sensor'], demand: ['Zapotrzebowanie / Demand', 'sensor'],
+  cop: ['COP z encji / COP entity', 'sensor']
 };
 export function numeric(value) {
   if (value === null || value === undefined || String(value).trim() === '') return null;
@@ -68,6 +71,24 @@ export function energyPeriod(a, b, start, end) {
   }
   return {consumed:input, produced:output, cop:input>0 ? output/input : null, start, end};
 }
+// Daily rows use recorder's own per-day change; a missing day stays missing, never 0.
+export function dailyEnergy(rowsA, rowsB, limit = 14) {
+  const map = rows => new Map((rows || []).map(r => [typeof r.start === 'number' ? r.start : Date.parse(r.start), numeric(r.change)]));
+  const x = map(rowsA), y = map(rowsB);
+  const days = [...x.keys()].filter(Number.isFinite).sort((a,b)=>a-b).slice(-limit).map(t => {
+    const consumed = x.get(t), produced = y.has(t) ? y.get(t) : null;
+    const okIn = consumed !== null && consumed >= -1e-6;
+    const okOut = produced !== null && produced >= -1e-6;
+    return {t, consumed: okIn ? Math.max(0, consumed) : null, produced: okOut ? Math.max(0, produced) : null,
+      cop: okIn && okOut && consumed > 0 ? produced / consumed : null};
+  });
+  const complete = key => days.length > 0 && days.every(d => d[key] !== null);
+  const sum = key => days.reduce((a,d) => d[key] === null ? a : a + d[key], 0);
+  return {days,
+    consumed: complete('consumed') ? sum('consumed') : null,
+    produced: complete('produced') ? sum('produced') : null,
+    cop: complete('consumed') && complete('produced') && sum('consumed') > 0 ? sum('produced')/sum('consumed') : null};
+}
 export function compressorSummary(rows, start, end, maxGap = 15*60000) {
   let runMs=0, starts=0, coveredMs=0;
   const list=(rows||[]).map(r=>({t:Date.parse(r.last_updated || r.last_changed), n:numeric(r.state)})).sort((a,b)=>a.t-b.t);
@@ -79,6 +100,22 @@ export function compressorSummary(rows, start, end, maxGap = 15*60000) {
     if(p.n===0 && q.n>0 && q.t>=start && q.t<=end) starts++;
   }
   return {runHours:runMs/3600000,starts,coverage: Math.max(0,Math.min(1,coveredMs/(end-start)))};
+}
+// Last known state per slot. Recorder stores changes only, so an unchanged value
+// has no new rows: carry it forward. A real hole is recorded as unavailable/unknown
+// and stays null, so the chart breaks there instead of inventing a reading.
+export function sampleSeries(rows, start, end, steps) {
+  const out = new Array(steps).fill(null);
+  const list = (rows||[]).map(r=>({t:Date.parse(r.last_updated||r.last_changed), s:r.state})).filter(p=>Number.isFinite(p.t)).sort((a,b)=>a.t-b.t);
+  if(!list.length) return out;
+  const step = (end-start)/steps;
+  let j = 0, last = null;
+  for(let i=0;i<steps;i++) {
+    const t = start + (i+1)*step;
+    while(j<list.length && list[j].t<=t) last = list[j++];
+    if(last && !['unavailable','unknown'].includes(last.s)) out[i]=last.s;
+  }
+  return out;
 }
 export function temperatureRequest(state, id, value) {
   const domain=id?.split('.')[0], a=state?.attributes;

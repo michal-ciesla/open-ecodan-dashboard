@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {numeric,esc,validateConfig,discover,energyPeriod,compressorSummary,temperatureRequest} from '../src/core.js';
+import {numeric,esc,validateConfig,discover,energyPeriod,dailyEnergy,sampleSeries,compressorSummary,temperatureRequest} from '../src/core.js';
 const H=3600000;
 const series=values=>values.map((sum,i)=>({start:i*H,sum}));
 test('unavailable, blank and non-finite values are not zero',()=>{for(const x of ['',null,undefined,'unknown','unavailable',Infinity,'NaN'])assert.equal(numeric(x),null);assert.equal(numeric('0'),0);});
@@ -15,3 +15,9 @@ test('discovery uses integration and device id; never mixes several pumps',()=>{
 test('ambiguous and disabled mappings remain unset',()=>{const rows=['a','b'].map(x=>({entity_id:`sensor.${x}_flow_temperature`,platform:'melcloud',device_id:'a'}));const states=Object.fromEntries(rows.map(r=>[r.entity_id,{}]));assert.equal(discover(rows,[],states).entities.flow,undefined);rows[1].disabled_by='user';assert.equal(discover(rows,[],states).entities.flow,rows[0].entity_id);});
 test('compressor gaps and unknown readings are excluded from coverage',()=>{const rows=[[0,0],[5*60000,30],[10*60000,30],[H,0]].map(([t,state])=>({last_updated:new Date(t).toISOString(),state:String(state)}));const r=compressorSummary(rows,0,H);assert.equal(r.starts,1);assert.equal(r.runHours,5/60);assert.equal(r.coverage,1/6);assert.equal(compressorSummary([],0,H).coverage,0);});
 test('temperature services restricted to valid entities, features and limits',()=>{const s={state:'heat',attributes:{min_temp:10,max_temp:30,supported_features:1}};assert.equal(temperatureRequest(s,'climate.zone',21).service,'set_temperature');for(const v of [9,31,'unknown'])assert.throws(()=>temperatureRequest(s,'climate.zone',v));assert.throws(()=>temperatureRequest({...s,state:'unavailable'},'climate.zone',21));assert.throws(()=>temperatureRequest(s,'switch.pump',21));assert.throws(()=>temperatureRequest({...s,attributes:{}},'climate.zone',21));});
+const days=changes=>changes.map((change,i)=>({start:i*86400000,change}));
+test('daily totals need every day; a gap in statistics never becomes zero',()=>{const r=dailyEnergy(days([10,null,12]),days([35,40,42]));assert.equal(r.days.length,3);assert.equal(r.days[1].consumed,null);assert.equal(r.days[1].cop,null);assert.equal(r.consumed,null);assert.equal(r.cop,null);});
+test('daily bars work without a production counter; COP stays unset',()=>{const r=dailyEnergy(days([10,12]),[]);assert.equal(r.consumed,22);assert.equal(r.produced,null);assert.equal(r.cop,null);assert.equal(r.days[0].produced,null);});
+test('period COP uses sums of both counters over the same days',()=>{const r=dailyEnergy(days([10,12]),days([35,42]));assert.equal(r.consumed,22);assert.equal(r.produced,77);assert.equal(r.cop,3.5);});
+test('recorder stores changes only, so an unchanged reading carries forward',()=>{const rows=[{last_updated:new Date(300000).toISOString(),state:'34.2'}];assert.deepEqual(sampleSeries(rows,0,6*3600000,6),Array(6).fill('34.2'));});
+test('unavailable entity breaks the series instead of repeating the last value',()=>{const rows=[[300000,'34.2'],[2*3600000,'unavailable'],[5*3600000,'31.0']].map(([t,state])=>({last_updated:new Date(t).toISOString(),state}));assert.deepEqual(sampleSeries(rows,0,6*3600000,6),['34.2',null,null,null,'31.0','31.0']);assert.deepEqual(sampleSeries([],0,6*3600000,3),[null,null,null]);});
