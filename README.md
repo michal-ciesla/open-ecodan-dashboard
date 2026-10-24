@@ -3,7 +3,8 @@
 A lightweight Lovelace card for Mitsubishi Ecodan in Home Assistant.
 
 <div align="center">
-  <img src="docs/images/open-ecodan-dashboard-preview.png" alt="Open Ecodan Dashboard preview" width="1200" />
+  <img src="docs/images/open-ecodan-dashboard-preview.png" alt="Open Ecodan Dashboard — dark overview with installation diagram and current temperatures" width="1200" />
+  <p><em>Overview rendered with example readings matching a Home Assistant screenshot.</em></p>
 </div>
 
 ## Overview

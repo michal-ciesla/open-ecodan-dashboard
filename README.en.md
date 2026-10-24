@@ -2,6 +2,11 @@
 
 Free, MIT-licensed Lovelace card for existing Mitsubishi Ecodan entities in Home Assistant. [Polski](README.md).
 
+<div align="center">
+  <img src="docs/images/open-ecodan-dashboard-preview.png" alt="Open Ecodan Dashboard — dark overview with installation diagram and current temperatures" width="1200" />
+  <p><em>Overview rendered with example readings matching a Home Assistant screenshot.</em></p>
+</div>
+
 **0.2.1: implemented software, running on one real Home Assistant installation; readings are not yet cross-checked against hardware counters.** No affiliation with Mitsubishi Electric. No proprietary code, assets or private account data are included.
 
 ## Features
